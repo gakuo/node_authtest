@@ -104,7 +104,7 @@ app.get('/logout', function(req, res) {
   });
   /*auth.get(req.session.id, function(err, sess) {
     if(sess && sess.views) {
-      auth.destroy(sess.sid, function(err) {
+      auth.destroy(sess.id, function(err) {
         sess.destroy();
         console.log('deleted session');
         res.redirect('/');

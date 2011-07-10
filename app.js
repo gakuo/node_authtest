@@ -96,6 +96,26 @@ app.get('/login', function(req, res, next) {
   });
 });
 
+app.get('/logout', function(req, res) {
+  auth.destroy(req.session.id, function(err) {
+    req.session.destroy();
+    console.log('deleted sesstion');
+    res.redirect('/');
+  });
+  /*auth.get(req.session.id, function(err, sess) {
+    if(sess && sess.views) {
+      auth.destroy(sess.sid, function(err) {
+        sess.destroy();
+        console.log('deleted session');
+        res.redirect('/');
+      });
+    } else {
+      console.log('not deleted session');
+      res.redirect('/');
+    }
+  });*/
+});
+
 app.post('/check', function(req, res) {
   User.findOne({id: req.body.id}, function(err, docs){
     if(docs !== null && docs.passwd === req.body.pw) {

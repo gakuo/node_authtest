@@ -29,8 +29,14 @@ var User = new mongoose.Schema({id: String, name: String, passwd: String});
 mongoose.model('User', User);
 User = mongoose.model('User');
 
+var fs = require('fs');
+var options = {
+  key: fs.readFileSync('/opt/ssl/ssl.key'),
+  cert: fs.readFileSync('/opt/ssl/ssl.crt')
+};
+
 var express = require('express');
-var app = module.exports = express.createServer();
+var app = module.exports = express.createServer(options);
 
 User.count({}, function(err, count){
   if(count === 0){
@@ -70,7 +76,8 @@ app.configure('production', function(){
 
 app.get('/', function(req, res){
   auth.get(req.session.id, function(err, sess) {
-    if(sess && sess.views) {
+    if(sess && sess.userid) {
+      console.log(sess);
       res.render('index', {
         title: req.session.userid
       });
@@ -82,7 +89,7 @@ app.get('/', function(req, res){
 
 app.get('/login', function(req, res, next) {
     auth.get( req.session.id, function(err, sess) {
-      if(sess && sess.views) {
+      if(sess && sess.userid) {
         res.redirect('/');
       } else {
         next();
@@ -91,10 +98,10 @@ app.get('/login', function(req, res, next) {
   },
   function(req, res) {
     res.render('login', {
-      title: 'login',
-      message: 'login form'
-  });
-});
+      title: 'login'
+    });
+  }
+);
 
 app.get('/logout', function(req, res) {
   auth.destroy(req.session.id, function(err) {
@@ -103,7 +110,7 @@ app.get('/logout', function(req, res) {
     res.redirect('/');
   });
   /*auth.get(req.session.id, function(err, sess) {
-    if(sess && sess.views) {
+    if(sess && sess.userid) {
       auth.destroy(sess.id, function(err) {
         sess.destroy();
         console.log('deleted session');
@@ -119,14 +126,12 @@ app.get('/logout', function(req, res) {
 app.post('/check', function(req, res) {
   User.findOne({id: req.body.id}, function(err, docs){
     if(docs !== null && docs.passwd === req.body.pw) {
+      console.log('pass');
       req.session.userid = req.body.id;
-      req.session.views = 1;
       res.redirect('/');
     } else {
       res.render('login', {
-        title: 'login',
-        message: 'login form',
-        error_message: 'password faild'
+        title: 'login'
       });
     }
   });

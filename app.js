@@ -30,13 +30,16 @@ mongoose.model('User', User);
 User = mongoose.model('User');
 
 var fs = require('fs');
+/*
 var options = {
   key: fs.readFileSync('/opt/ssl/ssl.key'),
   cert: fs.readFileSync('/opt/ssl/ssl.crt')
 };
+*/
 
 var express = require('express');
-var app = module.exports = express.createServer(options);
+//var app = module.exports = express.createServer(options);
+var app = module.exports = express.createServer();
 
 User.count({}, function(err, count){
   if(count === 0){

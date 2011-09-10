@@ -4,3 +4,4 @@ ssl.key
 ssl.crt
 logs
 pids
+node_modules

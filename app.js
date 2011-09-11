@@ -21,7 +21,7 @@ var Server = require('mongodb').Server;
 var server_config = new Server( 'localhost', 27017, {auto_reconnect: true, native_parser: true});
 var db = new Db( 'authtest', server_config, {} );
 var mongoStore = require( 'connect-mongodb');
-var auth;
+var Auth = new mongoStore({db: db});
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/yosumin');
@@ -59,7 +59,8 @@ app.configure(function(){
   app.use(express.session({
     cookie: {maxAge: 60000 * 20},
     secret: 'foo',
-    store: auth = new mongoStore({db: db})
+    //store: Auth = new mongoStore({db: db})
+    store: Auth
   }));
   app.use(express.methodOverride());
   app.use(app.router);
@@ -75,70 +76,10 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-// Routes
-
-app.get('/', function(req, res){
-  auth.get(req.session.id, function(err, sess) {
-    if(sess && sess.userid) {
-      console.log(sess);
-      res.render('index', {
-        title: req.session.userid
-      });
-    } else {
-      res.redirect('/login');
-    }
-  });
-});
-
-app.get('/login', function(req, res, next) {
-    auth.get( req.session.id, function(err, sess) {
-      if(sess && sess.userid) {
-        res.redirect('/');
-      } else {
-        next();
-      }
-    });
-  },
-  function(req, res) {
-    res.render('login', {
-      title: 'login'
-    });
-  }
-);
-
-app.get('/logout', function(req, res) {
-  auth.destroy(req.session.id, function(err) {
-    req.session.destroy();
-    console.log('deleted sesstion');
-    res.redirect('/');
-  });
-  /*auth.get(req.session.id, function(err, sess) {
-    if(sess && sess.userid) {
-      auth.destroy(sess.id, function(err) {
-        sess.destroy();
-        console.log('deleted session');
-        res.redirect('/');
-      });
-    } else {
-      console.log('not deleted session');
-      res.redirect('/');
-    }
-  });*/
-});
-
-app.post('/check', function(req, res) {
-  User.findOne({id: req.body.id}, function(err, docs){
-    if(docs !== null && docs.passwd === req.body.pw) {
-      console.log('pass');
-      req.session.userid = req.body.id;
-      res.redirect('/');
-    } else {
-      res.render('login', {
-        title: 'login'
-      });
-    }
-  });
-});
+app.Auth = Auth;
+app.User = User;
+//var models = require("./models.js");
+var routes = require("./routes.js");
 
 app.listen(server_port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

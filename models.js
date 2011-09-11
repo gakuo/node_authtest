@@ -1,5 +1,3 @@
-
-
 var Db = require('mongodb').Db;
 var Server = require('mongodb').Server;
 var server_config = new Server( 'localhost', 27017, {auto_reconnect: true, native_parser: true});

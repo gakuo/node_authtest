@@ -1,21 +1,12 @@
-/**
- * Params.
- */
-
 var server_port = 3001;
 var server_host = 'localhost';
-
 var mongodb_host = 'localhost';
 var mongodb_port = 27017;
 var mongodb_db_name = 'authtest';
 var mongodb_user = null;
 var mongodb_pwd = null;
 
-
-/**
- * Module dependencies.
- */
-
+/*
 var Db = require('mongodb').Db;
 var Server = require('mongodb').Server;
 var server_config = new Server( 'localhost', 27017, {auto_reconnect: true, native_parser: true});
@@ -30,7 +21,6 @@ mongoose.model('User', User);
 User = mongoose.model('User');
 
 var fs = require('fs');
-/*
 var options = {
   key: fs.readFileSync('/opt/ssl/ssl.key'),
   cert: fs.readFileSync('/opt/ssl/ssl.crt')
@@ -38,8 +28,10 @@ var options = {
 */
 
 var express = require('express');
-//var app = module.exports = express.createServer(options);
 var app = module.exports = express.createServer();
+var models = require("./models");
+var User = app.User = models.User;
+var Auth = app.Auth = models.Auth;
 
 User.count({}, function(err, count){
   if(count === 0){
@@ -47,9 +39,6 @@ User.count({}, function(err, count){
     });
   }
 });
-
-
-// Configuration
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -59,7 +48,6 @@ app.configure(function(){
   app.use(express.session({
     cookie: {maxAge: 60000 * 20},
     secret: 'foo',
-    //store: Auth = new mongoStore({db: db})
     store: Auth
   }));
   app.use(express.methodOverride());
@@ -76,10 +64,7 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-app.Auth = Auth;
-app.User = User;
-//var models = require("./models.js");
-var routes = require("./routes.js");
+var routes = require("./routes");
 
 app.listen(server_port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

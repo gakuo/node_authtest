@@ -1,4 +1,4 @@
-var app = module.exports = module.parent.exports;
+var app = module.parent.exports;
 var Auth = app.Auth;
 var User = app.User;
 
@@ -17,16 +17,18 @@ app.get('/', function(req, res){
   });
 });
 
-app.get('/login', function(req, res, next) {
-    Auth.get( req.session.id, function(err, sess) {
-      if(sess && sess.userid) {
-        res.redirect('/');
-      } else {
-        next();
-      }
-    });
-  },
-  function(req, res) {
+
+var isLogin = function(req, res, next) {
+  Auth.get( req.session.id, function(err, sess) {
+    if(sess && sess.userid) {
+      res.redirect('/');
+    } else {
+      next();
+    }
+  });
+}
+
+app.get('/login', isLogin, function(req, res) {
     res.render('login', {
       title: 'login'
     });
@@ -54,8 +56,9 @@ app.get('/logout', function(req, res) {
 });
 
 app.post('/check', function(req, res) {
-  User.findOne({id: req.body.id}, function(err, docs){
+  User.findOne({id: req.body.id}, function(err, docs) {
     if(docs !== null && docs.passwd === req.body.pw) {
+      //ここでOKならnextを実行して次でuseridをセット,でなければログインurlにリダイレクト
       console.log('pass');
       req.session.userid = req.body.id;
       res.redirect('/');

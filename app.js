@@ -13,20 +13,8 @@ var mongodb_pwd = null;
 
 var express = require('express');
 var app = module.exports = express.createServer();
-var models = require("./models");
-var User = app.User = models.User;
-var Auth = app.Auth = models.Auth;
+app.auth = require('./auth');
 
-/**
- * initialize
- */
-
-User.count({}, function(err, count){
-  if(count === 0){
-    new User({id: 'testuser@example.com', name: 'testuser', passwd: 'hoge'}).save(function(err){
-    });
-  }
-});
 
 /**
  * configure
@@ -40,7 +28,7 @@ app.configure(function(){
   app.use(express.session({
     cookie: {maxAge: 60000 * 20},
     secret: 'foo',
-    store: Auth
+    store: app.auth.sessionStore
   }));
   app.use(express.methodOverride());
   app.use(app.router);

@@ -19,6 +19,22 @@ user.count({}, function(err, count){
 });
 
 
+
+var signup = exports.signup = function(req, res, next) {
+  user.findOne({id: req.body.id}, function(err, docs) {
+    if(docs !== null) {
+      res.redirect('/signup');
+    } else if(req.body.pw !== req.body.pw2) {
+      res.redirect('/signup');
+    } else {
+      new user({id: req.body.id, name: req.body.name, passwd: req.body.pw}).save(function(err) {
+      });
+      req.session.userid = req.body.id;
+      next();
+    }
+  });
+}
+
 var isLogined = exports.isLogined = function(req, res, next) {
   sessionStore.get( req.session.id, function(err, sess) {
     if(sess && sess.userid) {

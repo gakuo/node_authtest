@@ -5,7 +5,6 @@ var server_port = 3001;
 var server_host = 'localhost';
 var config = require('./config');
 var models = require('./models');
-
 var express = require('express');
 var app = module.exports = express.createServer();
 app.auth = new (require('./auth'))({
@@ -15,6 +14,8 @@ app.auth = new (require('./auth'))({
   id: 'id',
   pw: 'passwd'
 });
+var sockets = require('./sockets');
+
 
 /**
  * configure

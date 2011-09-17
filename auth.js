@@ -32,6 +32,7 @@ initialize.prototype = {
     });
   },
   checkUser: function(req, res, next) {
+    //TODO: スキーマ情報に依存しない方法を検討
     user.findOne({id: req.body.id}, function(err, docs) {
       if(docs !== null && docs.passwd === req.body.pw) {
         req.session.userid = req.body.id;
@@ -42,12 +43,14 @@ initialize.prototype = {
     });
   },
   addUser: function(req, res, next) {
+    //TODO: スキーマ情報に依存しない方法を検討
     user.findOne({id: req.body.id}, function(err, docs) {
       if(docs !== null) {
         res.redirect('/signup');
       } else if(req.body.pw !== req.body.pw2) {
         res.redirect('/signup');
       } else {
+        //TODO: スキーマ情報に依存しない方法を検討
         new user({id: req.body.id, name: req.body.name, passwd: req.body.pw}).save(function(err) {
         });
         req.session.userid = req.body.id;

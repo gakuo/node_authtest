@@ -13,7 +13,18 @@ var mongodb_pwd = null;
 
 var express = require('express');
 var app = module.exports = express.createServer();
-app.auth = require('./auth');
+app.auth = new (require('./auth'))({
+    mongo_info: {
+      domain: 'localhost',
+      port: 27017,
+      params: {
+        auto_reconnect: true,
+        native_parser: true
+      }
+    },
+    dbname: 'yosumin',
+    user_collection: 'user'
+  });
 
 
 /**

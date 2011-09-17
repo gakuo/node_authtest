@@ -11,16 +11,50 @@ var user = new mongoose.Schema({id: String, name: String, passwd: String});
 mongoose.model('user', user);
 user = mongoose.model('user');
 
-user.count({}, function(err, count){
-  if(count === 0){
-    new user({id: 'testuser@example.com', name: 'testuser', passwd: 'hoge'}).save(function(err){
-    });
-  }
-});
 
+/*var isLogined = exports.isLogined = function(req, res, next) {
+  sessionStore.get( req.session.id, function(err, sess) {
+    if(sess && sess.userid) {
+      next();
+    } else {
+      res.render('login', {
+        title: 'login'
+      });
+    }
+  });
+}*/
 
+var isLogined = exports.isLogined = function(req, res, logined, notlogined) {
+  sessionStore.get( req.session.id, function(err, sess) {
+    if(sess && sess.userid) {
+      logined(req, res);
+    } else {
+      notlogined(req, res);
+    }
+  });
+}
 
-var signup = exports.signup = function(req, res, next) {
+var deleteSession = exports.deleteSession = function(req, res, next) {
+ sessionStore.destroy(req.session.id, function(err) {
+    req.session.destroy();
+    next();
+  });
+}
+
+var checkUser = exports.checkUser = function(req, res, next) {
+  user.findOne({id: req.body.id}, function(err, docs) {
+    if(docs !== null && docs.passwd === req.body.pw) {
+      req.session.userid = req.body.id;
+      next();
+    } else {
+      res.render('login', {
+        title: 'login'
+      });
+    }
+  });
+}
+
+var addUser = exports.addUser = function(req, res, next) {
   user.findOne({id: req.body.id}, function(err, docs) {
     if(docs !== null) {
       res.redirect('/signup');
@@ -31,38 +65,6 @@ var signup = exports.signup = function(req, res, next) {
       });
       req.session.userid = req.body.id;
       next();
-    }
-  });
-}
-
-var isLogined = exports.isLogined = function(req, res, next) {
-  sessionStore.get( req.session.id, function(err, sess) {
-    if(sess && sess.userid) {
-      next();
-    } else {
-      res.render('login', {
-        title: 'login'
-      });
-    }
-  });
-}
-
-var logout = exports.logout = function(req, res, next) {
- sessionStore.destroy(req.session.id, function(err) {
-    req.session.destroy();
-    next();
-  });
-}
-
-var login = exports.login = function(req, res, next) {
-  user.findOne({id: req.body.id}, function(err, docs) {
-    if(docs !== null && docs.passwd === req.body.pw) {
-      req.session.userid = req.body.id;
-      next();
-    } else {
-      res.render('login', {
-        title: 'login'
-      });
     }
   });
 }

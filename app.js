@@ -1,36 +1,24 @@
 /**
  * define
  */
-
 var server_port = 3001;
 var server_host = 'localhost';
-
-var mongodb_host = 'localhost';
-var mongodb_port = 27017;
-var mongodb_db_name = 'authtest';
-var mongodb_user = null;
-var mongodb_pwd = null;
+var config = require('./config');
+var models = require('./models');
 
 var express = require('express');
 var app = module.exports = express.createServer();
 app.auth = new (require('./auth'))({
-    mongo_info: {
-      domain: 'localhost',
-      port: 27017,
-      params: {
-        auto_reconnect: true,
-        native_parser: true
-      }
-    },
-    dbname: 'yosumin',
-    user_collection: 'user'
-  });
-
+  mongo_info: config.mongo_info,
+  user_model: models.user,
+  //user_modelにIDとパスワードがどこに定義されているか
+  id: 'id',
+  pw: 'passwd'
+});
 
 /**
  * configure
  */
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');

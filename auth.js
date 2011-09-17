@@ -4,19 +4,14 @@ var MongoStore = require( 'connect-mongodb');
 var server_config;
 var db;
 var sessionStore;
-
-var mongoose = require('mongoose');
-var user = new mongoose.Schema({id: String, name: String, passwd: String});
+var user;
 
 
 var initialize = module.exports = function(init_obj) {
   server_config = new Server(init_obj.mongo_info.domain, init_obj.mongo_info.port, init_obj.mongo_info.params);
-  db = new Db(init_obj.dbname, server_config, {});
+  db = new Db(init_obj.mongo_info.dbname, server_config, {});
   sessionStore = this.sessionStore = new MongoStore({db: db});
-
-  mongoose.connect('mongodb://' + init_obj.mongo_info.domain + ':' + init_obj.mongo_info.port + '/' + init_obj.dbname);
-  mongoose.model(init_obj.user_collection, user);
-  user = mongoose.model(init_obj.user_collection);
+  user = init_obj.user_model;
 }
 
 

@@ -23,6 +23,7 @@ var sockets = require('./sockets');
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set('view options', {layout: false});
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.session({

@@ -1,8 +1,16 @@
-h1= title
-p Enter your id, name and password
-form( method='POST', action='/addUser')
-  input( type='text', name='id' )
-  input( type='text', name='name' )
-  input( type='password', name='pw' )
-  input( type='password', name='pw2' )
-  input( type='submit', name='enter', value='login' )
+!!! 5
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='/javascript/jquery-1.6.4.min.js')
+    script(src='/socket.io/socket.io.js')
+  body
+    h1= title
+    p Enter your id, name and password
+    form( method='POST', action='/addUser')
+      input( type='text', name='id' )
+      input( type='text', name='name' )
+      input( type='password', name='pw' )
+      input( type='password', name='pw2' )
+      input( type='submit', name='enter', value='login' )

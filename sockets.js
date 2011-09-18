@@ -31,8 +31,20 @@ io.configure(function() {
 
 io.sockets.on('connection', function(socket) {
   var handshake = socket.handshake;
-  socket.on('user message', function(data) {
-    console.log(handshake.session.userid + '\'s message: ' + data);
+  socket.on('user message', function(message) {
+    console.log(message);
+    socket.emit('user message', handshake.session.userid + ': ' + message);
+    socket.broadcast.emit('user message', handshake.session.userid + ': ' + message);
   });
-  //TODO; つないでる間はセッションを更新する処理
+
+  var intervalID = setInterval(function() {
+    handshake.session.req.sessionStore = app.auth.sessionStore;
+    handshake.session.reload(function() {
+      handshake.session.touch().save();
+    });
+  }, 1000*2);
+  
+  socket.on('disconnect', function() {
+    clearInterval(intervalID);
+  });
 });

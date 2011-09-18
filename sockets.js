@@ -32,7 +32,6 @@ io.configure(function() {
 io.sockets.on('connection', function(socket) {
   var handshake = socket.handshake;
   socket.on('user message', function(message) {
-    console.log(message);
     socket.emit('user message', handshake.session.userid + ': ' + message);
     socket.broadcast.emit('user message', handshake.session.userid + ': ' + message);
   });
